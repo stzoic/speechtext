@@ -10,48 +10,46 @@
     --text:#e6edf3; --muted:#98a0ad;
   }
   body{font-family:Inter,Arial,sans-serif;background:var(--bg);color:var(--text);margin:0;padding:24px;display:flex;align-items:center;justify-content:center;min-height:100vh;}
-  .card{width:100%;max-width:760px;background:var(--card);padding:22px;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.6);}
-  .flexbox{display: flex;justify-content:space-between;}
-  h1{margin:0 0 10px 0;font-size:20px}
-  .row{display:flex;gap:12px;align-items:center;margin-top:12px;flex-wrap:wrap;}
+  .card{width:100%;max-width:760px;background:var(--card);padding:52px;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.6);}
+  .flexbox{display: flex;justify-content:center;margin-top:1%;}
+  h1{margin:0 0 0px 0;font-size:20px}
+  .row{display:flex;gap:12px;align-items:center;margin-top:px;flex-wrap:wrap;}
   select,button{padding:10px 14px;border-radius:8px;border:none;font-size:15px;cursor:pointer}
   select{background:#0f1720;color:var(--text)}
-  .btn-start{background:var(--accent);color:white}
-  .btn-stop{background:var(--danger);color:white}
+  .buttons{display:flex;align-items: center;padding-top:2%;padding-bottom:2%;}
+  .btn-start{background:var(--accent);color:white;margin-right: 2%;}
+  .btn-stop{background:var(--danger);color:white;margin-right: 2%;}
   .status{margin-left:px;color:var(--muted);font-size:14px}
-  textarea{width:98%;min-height:260px;margin-top:14px;background:#0b0f14;color:var(--text);border-radius:8px;padding-top:10px;padding-left:10px;border:1px solid rgba(255,255,255,0.03);font-size:15px;resize:vertical}
+  textarea{width:100%; min-height:260px;margin-top:14px;background:#0b0f14;color:var(--text);border-radius:8px;padding-top:10px;padding-left:10px;border:1px solid rgba(255,255,255,0.03);font-size:15px;resize:vertical}
+  .outputtxt{padding-right: 2%;}
   .controls{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+  .gaybar{display: flex;justify-content:center;padding-top:8%;}
   .small{font-size:14px;color:var(--muted)}
   .hint{margin-top:10px;color:var(--muted);font-size:13px}
 </style>
 </head>
 <body>
   <div class="card">
-    <!-- <h1>Speech → Text with NAZI</h1> -->
-    <div class="flexbox">
-      <div>
-            <h1>Speech → Text</h1>
-      </div>
-      <div>
-            <h1>Developed by NAZI</h1>
-      </div>
-    </div>
+    <h1>Speech → Text</h1>
     <div class="row">
       <label for="lang" class="small">Language:</label>
       <select id="lang" title="Choose language">
-        <!-- <option value="bn-BD">বাংলা (Bangla)</option> -->
+        <option value="bn-BD">বাংলা (Bangla)</option>
         <option value="en-US">English (US)</option>
         <!-- <option value="en-GB">English (UK)</option> -->
-        <option value="bn-IN">বাংলা (Bangla)</option>
+        <!-- <option value="bn-IN">বাংলা (Bangla - India)</option> -->
       </select>
 
-      <button id="startBtn" class="btn-start">Start</button>
+    </div>
+    <div class="buttons">
+      <button  id="startBtn" class="btn-start">Start</button>
       <button id="stopBtn" class="btn-stop" disabled>Stop</button>
-
       <div class="status" id="status">Status: None</div>
     </div>
 
-    <textarea id="transcript" placeholder="Your spoken text will appear here..." ></textarea>
+<div class="outputtxt">
+      <textarea id="transcript" placeholder="Your spoken text will appear here..." ></textarea>
+</div>
 
     <div class="controls">
       <button id="copyBtn">Copy</button>
@@ -59,12 +57,12 @@
       <button id="clearBtn">Clear</button>
       <div style="flex:1"></div>
     </div>
-    <div class="controls">
-      <div class="small">Browser: Best on Chrome/Edge. Allow microphone when prompted.</div>
-    </div>
-        <div class="controls">
-      <div class="small">Open source for G@y user</div>
-    </div>
+        <div class="gaybar">
+          <div class="small">Open source for G@y user</div>
+        </div>
+            <div class="flexbox">
+               <h1>Developed by NAZI</h1>
+            </div>
     <!-- <div class="hint">Tip: switch language before you start speaking. You can also mix languages but accuracy varies.</div> -->
   </div>
 
@@ -197,4 +195,3 @@
 </script>
 </body>
 </html>
-
