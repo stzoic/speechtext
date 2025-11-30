@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Speech → Text by NAZI</title>
+<style>
+  :root{
+    --bg:#0d1117; --card:#16181d; --accent:#1f6feb; --danger:#d73a49;
+    --text:#e6edf3; --muted:#98a0ad;
+  }
+  body{font-family:Inter,Arial,sans-serif;background:var(--bg);color:var(--text);margin:0;padding:24px;display:flex;align-items:center;justify-content:center;min-height:100vh;}
+  .card{width:100%;max-width:760px;background:var(--card);padding:22px;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.6);}
+  .flexbox{display: flex;justify-content:space-between;}
+  h1{margin:0 0 10px 0;font-size:20px}
+  .row{display:flex;gap:12px;align-items:center;margin-top:12px;flex-wrap:wrap;}
+  select,button{padding:10px 14px;border-radius:8px;border:none;font-size:15px;cursor:pointer}
+  select{background:#0f1720;color:var(--text)}
+  .btn-start{background:var(--accent);color:white}
+  .btn-stop{background:var(--danger);color:white}
+  .status{margin-left:px;color:var(--muted);font-size:14px}
+  textarea{width:98%;min-height:260px;margin-top:14px;background:#0b0f14;color:var(--text);border-radius:8px;padding-top:10px;padding-left:10px;border:1px solid rgba(255,255,255,0.03);font-size:15px;resize:vertical}
+  .controls{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+  .small{font-size:14px;color:var(--muted)}
+  .hint{margin-top:10px;color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+  <div class="card">
+    <!-- <h1>Speech → Text with NAZI</h1> -->
+    <div class="flexbox">
+      <div>
+            <h1>Speech → Text</h1>
+      </div>
+      <div>
+            <h1>Developed by NAZI</h1>
+      </div>
+    </div>
+    <div class="row">
+      <label for="lang" class="small">Language:</label>
+      <select id="lang" title="Choose language">
+        <option value="bn-BD">বাংলা (Bangla)</option>
+        <option value="en-US">English (US)</option>
+        <!-- <option value="en-GB">English (UK)</option> -->
+        <!-- <option value="bn-IN">বাংলা (Bangla - India)</option> -->
+      </select>
+
+      <button id="startBtn" class="btn-start">Start</button>
+      <button id="stopBtn" class="btn-stop" disabled>Stop</button>
+
+      <div class="status" id="status">Status: None</div>
+    </div>
+
+    <textarea id="transcript" placeholder="Your spoken text will appear here..." ></textarea>
+
+    <div class="controls">
+      <button id="copyBtn">Copy</button>
+      <button id="downloadBtn">Download .txt</button>
+      <button id="clearBtn">Clear</button>
+      <div style="flex:1"></div>
+    </div>
+    <div class="controls">
+      <div class="small">Browser: Best on Chrome/Edge. Allow microphone when prompted.</div>
+    </div>
+    <!-- <div class="hint">Tip: switch language before you start speaking. You can also mix languages but accuracy varies.</div> -->
+  </div>
+
+<script>
+  // Check support
+  window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition || null;
+  const startBtn = document.getElementById('startBtn');
+  const stopBtn = document.getElementById('stopBtn');
+  const langSelect = document.getElementById('lang');
+  const statusEl = document.getElementById('status');
+  const transcriptEl = document.getElementById('transcript');
+  const copyBtn = document.getElementById('copyBtn');
+  const downloadBtn = document.getElementById('downloadBtn');
+  const clearBtn = document.getElementById('clearBtn');
+
+  if (!window.SpeechRecognition) {
+    statusEl.innerText = 'Status: Browser not supported. Use Chrome/Edge.';
+    startBtn.disabled = true;
+  }
+
+  let recognition = null;
+  let finalTranscript = '';
+
+  function initRecognition(){
+    if (!window.SpeechRecognition) return;
+    recognition = new window.SpeechRecognition();
+    recognition.continuous = true;      // continuous listening
+    recognition.interimResults = true;  // show interim (partial) results
+    recognition.lang = langSelect.value;
+
+    recognition.onstart = () => {
+      statusEl.innerText = 'Status: Listening...';
+      startBtn.disabled = true;
+      stopBtn.disabled = false;
+    };
+
+    recognition.onerror = (event) => {
+      console.error('Speech error', event);
+      statusEl.innerText = 'Status: Error - ' + (event.error || 'unknown');
+    };
+
+    recognition.onend = () => {
+      statusEl.innerText = 'Status: Stopped';
+      startBtn.disabled = false;
+      stopBtn.disabled = true;
+      recognition = null;
+    };
+
+    recognition.onresult = (event) => {
+      let interim = '';
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        const transcript = event.results[i][0].transcript;
+        if (event.results[i].isFinal) {
+          finalTranscript += transcript + (transcript.slice(-1).match(/[.!?]/) ? ' ' : ' ');
+        } else {
+          interim += transcript;
+        }
+      }
+      transcriptEl.value = (finalTranscript + interim).trim();
+    };
+  }
+
+  startBtn.addEventListener('click', async () => {
+    try {
+      // re-init with current language
+      if (recognition) {
+        recognition.stop();
+        recognition = null;
+      }
+      initRecognition();
+      if (!recognition) return;
+      recognition.lang = langSelect.value;
+      // ask mic permission first
+      await navigator.mediaDevices.getUserMedia({ audio: true });
+      recognition.start();
+    } catch (err) {
+      console.error(err);
+      statusEl.innerText = 'Status: Microphone permission denied or error';
+    }
+  });
+
+  stopBtn.addEventListener('click', () => {
+    if (recognition) recognition.stop();
+  });
+
+  langSelect.addEventListener('change', () => {
+    // if already running, restart recognition with new lang
+    if (recognition) {
+      recognition.stop();
+      setTimeout(() => {
+        initRecognition();
+        recognition.lang = langSelect.value;
+        recognition.start();
+      }, 300);
+    }
+  });
+
+  copyBtn.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(transcriptEl.value);
+      statusEl.innerText = 'Status: Copied to clipboard';
+      setTimeout(()=> statusEl.innerText = 'Status: Idle', 1500);
+    } catch (e) {
+      statusEl.innerText = 'Status: Copy failed';
+    }
+  });
+
+  downloadBtn.addEventListener('click', () => {
+    const text = transcriptEl.value;
+    const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'transcript.txt';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+
+  clearBtn.addEventListener('click', () => {
+    finalTranscript = '';
+    transcriptEl.value = '';
+    statusEl.innerText = 'Status: Cleared';
+    setTimeout(()=> statusEl.innerText = 'Status: Idle', 1000);
+  });
+
+  // optional: keyboard shortcuts
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'F9') { startBtn.click(); }
+    if (e.key === 'F10') { stopBtn.click(); }
+  });
+</script>
+</body>
+</html>
